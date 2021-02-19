@@ -34,7 +34,7 @@ a {
 }
 
 .today {
-  background-color: #50528b;
+  background: linear-gradient(#232552, #5e609d);
   color: #fff;
   padding: 16px 32px;
 }
@@ -96,7 +96,14 @@ a {
 .weekdays-container {
   padding: 8px;
   display: grid;
+  align-items: center;
   grid-template-columns: 6fr 2fr 4fr;
+  transition: background-color 0.5s ease-in-out;
+  border-radius: 4px;
+}
+
+.weekdays-container:hover {
+  background-color: #757aff;
 }
 
 .weekdays-icon {

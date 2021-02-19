@@ -6,7 +6,11 @@ const apiFiveDaysUrl =
   "https://api.openweathermap.org/data/2.5/forecast?q=Stockholm,Sweden&units=metric&APPID=ad72cba3e69f19b6bfee096375f2b3f9";
 fetch(apiUrl)
   .then((response) => {
-    return response.json();
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw "Ups, something went wrong!";
+    }
   })
 
   .then((json) => {
@@ -26,7 +30,7 @@ fetch(apiUrl)
 
     const hr = new Date().getHours();
     let isDay;
-    if (hr > json.sys.sunrise && hr < json.sys.sunset) {
+    if (hr > json.sys.sunrise || hr < json.sys.sunset) {
       isDay = true;
     } else {
       isDay = false;
@@ -51,11 +55,16 @@ fetch(apiUrl)
         <span>${sunset}</span>
       </div>
     `;
-  });
+  })
+  .catch((error) => (todayContainer.innerHTML += `${error}`));
 
 fetch(apiFiveDaysUrl)
   .then((response) => {
-    return response.json();
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw "Ups, something went wrong!";
+    }
   })
   .then((json) => {
     const filteredForecast = json.list.filter((item) =>
@@ -80,4 +89,5 @@ fetch(apiFiveDaysUrl)
         </div>
       `;
     });
-  });
+  })
+  .catch((error) => (weekdaysContainer.innerHTML += `${error}`));
