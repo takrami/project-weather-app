@@ -67,12 +67,24 @@ fetch(apiFiveDaysUrl)
     }
   })
   .then((json) => {
-    const filteredForecast = json.list.filter((item) =>
-      item.dt_txt.includes("12:00")
-    );
-    filteredForecast.forEach((item) => {
-      let iconSrc = `https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`;
-      let weekday = new Date(item.dt_txt).toLocaleString("en-US", {
+    const sortedDates = {};
+    let dayOffset = 0;
+    for (let i = 0; i <= 5; i++) {
+      const currentDay = new Date(new Date().getTime() + dayOffset)
+        .toISOString()
+        .split("T")[0];
+
+      sortedDates[currentDay] = json.list.filter((i) =>
+        i.dt_txt.includes(currentDay)
+      );
+      dayOffset += 86400000;
+    }
+
+    for (const [key, temps] of Object.entries(sortedDates)) {
+      const max = Math.round(Math.max(...temps.map((o) => o.main.temp), 0));
+      const min = Math.round(Math.min(...temps.map((o) => o.main.temp), 0));
+      let iconSrc = `https://openweathermap.org/img/wn/${temps[0].weather[0].icon}@2x.png`;
+      let weekday = new Date(temps[0].dt_txt).toLocaleString("en-US", {
         weekday: "short",
       });
 
@@ -81,13 +93,13 @@ fetch(apiFiveDaysUrl)
           <span class="weekdays-name">${weekday}</span>
           <img src=${iconSrc} class="weekdays-icon" />
           <span class="weekdays-temp">
-            <span>${Math.round(item.main.temp_max)}</span>
+            <span>${max}</span>
             /
-            <span>${Math.round(item.main.temp_min)}</span>
+            <span>${min}</span>
             <span>&#8451;</span> 
           </span>
         </div>
       `;
-    });
+    }
   })
   .catch((error) => (weekdaysContainer.innerHTML += `${error}`));
